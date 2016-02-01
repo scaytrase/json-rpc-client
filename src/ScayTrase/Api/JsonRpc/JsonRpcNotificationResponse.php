@@ -7,51 +7,45 @@
 
 namespace ScayTrase\Api\JsonRpc;
 
-use ScayTrase\Api\Rpc\RpcErrorInterface;
-
 final class JsonRpcNotificationResponse implements JsonRpcResponseInterface
 {
-    /**
-     * @return \StdClass|null
-     */
+    /** {@inheritdoc} */
     public function getResult()
     {
         return null;
     }
 
-    /**
-     * @return string JSON-RPC version
-     */
+    /** {@inheritdoc} */
     public function getVersion()
     {
         return JsonRpcClient::VERSION;
     }
 
-    /** @return bool */
+    /** {@inheritdoc} */
     public function isSuccessful()
     {
         return true;
     }
 
-    /** @return RpcErrorInterface|null */
+    /** {@inheritdoc} */
     public function getError()
     {
         return null;
     }
 
-    /** @return \StdClass[]|null */
+    /** {@inheritdoc} */
     public function getBody()
     {
         return null;
     }
 
-    /** @return array */
+    /** {@inheritdoc} */
     public function getHeaders()
     {
         return [];
     }
 
-    /** @return string|null Response ID or null for notification pseudo-response */
+    /** {@inheritdoc} */
     public function getId()
     {
         return null;
