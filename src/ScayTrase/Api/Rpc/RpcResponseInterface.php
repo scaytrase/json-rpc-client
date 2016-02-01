@@ -15,7 +15,7 @@ interface RpcResponseInterface
     /** @return RpcErrorInterface|null */
     public function getError();
 
-    /** @return \StdClass[]|null */
+    /** @return \StdClass|\StdClass[]|null */
     public function getBody();
 
     /** @return array */
