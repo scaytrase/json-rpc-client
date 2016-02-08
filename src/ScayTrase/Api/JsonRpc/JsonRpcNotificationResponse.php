@@ -10,12 +10,6 @@ namespace ScayTrase\Api\JsonRpc;
 final class JsonRpcNotificationResponse implements JsonRpcResponseInterface
 {
     /** {@inheritdoc} */
-    public function getResult()
-    {
-        return null;
-    }
-
-    /** {@inheritdoc} */
     public function getVersion()
     {
         return JsonRpcClient::VERSION;

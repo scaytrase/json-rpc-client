@@ -67,25 +67,17 @@ final class SyncResponse implements JsonRpcResponseInterface
     /** {@inheritdoc} */
     public function getBody()
     {
-        return $this->response;
+        if (!$this->isSuccessful()) {
+            return null;
+        }
+
+        return $this->response->result;
     }
 
     /** {@inheritdoc} */
     public function getHeaders()
     {
         return [];
-    }
-
-    /**
-     * @return \StdClass
-     */
-    public function getResult()
-    {
-        if (!$this->isSuccessful()) {
-            return null;
-        }
-
-        return $this->response->result;
     }
 
     /**

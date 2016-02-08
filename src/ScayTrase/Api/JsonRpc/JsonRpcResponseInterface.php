@@ -20,11 +20,6 @@ interface JsonRpcResponseInterface extends RpcResponseInterface
     const RESULT_FIELD = 'result';
 
     /**
-     * @return \StdClass|null
-     */
-    public function getResult();
-
-    /**
      * @return string JSON-RPC version
      */
     public function getVersion();
