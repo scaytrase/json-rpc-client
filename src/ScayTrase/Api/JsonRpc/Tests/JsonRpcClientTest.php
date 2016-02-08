@@ -34,11 +34,11 @@ class JsonRpcClientTest extends AbstractJsonRpcClientTest
         /** @var JsonRpcResponseInterface $response */
         $response = $collection->getResponse($request);
         self::assertTrue($response->isSuccessful());
-        self::assertNotNull($response->getResult());
+        self::assertNotNull($response->getBody());
         self::assertEquals($client::VERSION, $response->getVersion());
         self::assertNull($response->getError());
-        self::assertObjectHasAttribute('foo', $response->getResult());
-        self::assertEquals('bar', $response->getResult()->foo);
+        self::assertObjectHasAttribute('foo', $response->getBody());
+        self::assertEquals('bar', $response->getBody()->foo);
     }
 
     public function testSingleFailedRequest()
@@ -51,7 +51,7 @@ class JsonRpcClientTest extends AbstractJsonRpcClientTest
         /** @var JsonRpcResponseInterface $response */
         $response = $collection->getResponse($request);
         self::assertFalse($response->isSuccessful());
-        self::assertNull($response->getResult());
+        self::assertNull($response->getBody());
         self::assertNotNull($response->getError());
         self::assertEquals($client::VERSION, $response->getVersion());
         self::assertInstanceOf(RpcErrorInterface::class, $response->getError());
@@ -68,7 +68,7 @@ class JsonRpcClientTest extends AbstractJsonRpcClientTest
 
         $response = $collection->getResponse($notification);
         self::assertTrue($response->isSuccessful());
-        self::assertNull($response->getResult());
+        self::assertNull($response->getBody());
         self::assertNull($response->getError());
         self::assertEquals($client::VERSION, $response->getVersion());
     }
@@ -101,8 +101,8 @@ class JsonRpcClientTest extends AbstractJsonRpcClientTest
         self::assertNotNull($rResponse);
         self::assertInstanceOf(JsonRpcResponseInterface::class, $rResponse);
         self::assertTrue($rResponse->isSuccessful());
-        self::assertObjectHasAttribute('success', $rResponse->getResult());
-        self::assertTrue($rResponse->getResult()->success);
+        self::assertObjectHasAttribute('success', $rResponse->getBody());
+        self::assertTrue($rResponse->getBody()->success);
 
         self::assertNotNull($nResponse);
         self::assertInstanceOf(JsonRpcResponseInterface::class, $nResponse);
