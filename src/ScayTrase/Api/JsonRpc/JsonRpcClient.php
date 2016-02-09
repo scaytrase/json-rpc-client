@@ -104,9 +104,9 @@ final class JsonRpcClient implements RpcClientInterface
     private function formatJsonRpcCall(JsonRpcRequestInterface $request)
     {
         $result = [
-            'version' => static::VERSION,
+            'jsonrpc' => static::VERSION,
             'method' => $request->getMethod(),
-            'parameters' => $request->getParameters(),
+            'params' => $request->getParameters(),
         ];
 
         if (!$request->isNotification()) {
