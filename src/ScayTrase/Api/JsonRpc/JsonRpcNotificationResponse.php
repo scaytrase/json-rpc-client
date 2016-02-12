@@ -34,12 +34,6 @@ final class JsonRpcNotificationResponse implements JsonRpcResponseInterface
     }
 
     /** {@inheritdoc} */
-    public function getHeaders()
-    {
-        return [];
-    }
-
-    /** {@inheritdoc} */
     public function getId()
     {
         return null;

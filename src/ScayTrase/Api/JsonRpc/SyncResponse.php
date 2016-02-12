@@ -74,12 +74,6 @@ final class SyncResponse implements JsonRpcResponseInterface
         return $this->response->result;
     }
 
-    /** {@inheritdoc} */
-    public function getHeaders()
-    {
-        return [];
-    }
-
     /**
      * @return string JSON-RPC version
      */
