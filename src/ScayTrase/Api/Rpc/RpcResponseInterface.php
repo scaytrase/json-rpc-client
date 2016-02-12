@@ -17,7 +17,4 @@ interface RpcResponseInterface
 
     /** @return \StdClass|\StdClass[]|null */
     public function getBody();
-
-    /** @return array */
-    public function getHeaders();
 }
