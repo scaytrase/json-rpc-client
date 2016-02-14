@@ -14,6 +14,6 @@ interface JsonRpcRequestInterface extends RpcRequestInterface
     /** @return int|null Id. if not a notification and id is not set - id should be automatically generated */
     public function getId();
 
-    /** @return bool True if request should receive response from the server */
+    /** @return bool True if request should not receive response from the server */
     public function isNotification();
 }
