@@ -62,7 +62,7 @@ class LazyClientTest extends \PHPUnit_Framework_TestCase
             self::assertEquals($response, $responses[$id]);
             self::assertTrue($response->isSuccessful());
             self::assertInstanceOf(\StdClass::class, $response->getBody());
-            self::assertEquals($request->getParameters(), (array)$response->getBody());
+            self::assertEquals($request->getParameters(), $response->getBody());
         }
     }
 
@@ -76,7 +76,7 @@ class LazyClientTest extends \PHPUnit_Framework_TestCase
     {
         $mock = self::getMock(RpcRequestInterface::class);
         $mock->method('getMethod')->willReturn($method);
-        $mock->method('getParameters')->willReturn($params);
+        $mock->method('getParameters')->willReturn((object)$params);
 
         return $mock;
     }

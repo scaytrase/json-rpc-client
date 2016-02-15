@@ -56,8 +56,8 @@ final class LazyResponseCollection implements \IteratorAggregate, ResponseCollec
 
     public function append(RpcRequestInterface $request)
     {
-        if ($this->initialized) {
-            throw  new \LogicException('Cannot add request to initialized lazy collection');
+        if ($this->isFrozen()) {
+            throw new \LogicException('Cannot add request to frozen lazy collection');
         }
 
         $this->requests[] = $request;

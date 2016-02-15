@@ -15,16 +15,16 @@ final class JsonRpcRequest implements JsonRpcRequestInterface
     private $id;
     /** @var  string */
     private $method;
-    /** @var  array */
+    /** @var  \StdClass|\StdClass[]|null */
     private $parameters;
 
     /**
      * JsonRpcRequest constructor.
      * @param string $method
-     * @param array $parameters
+     * @param \StdClass|\StdClass[]|null $parameters
      * @param string $id
      */
-    public function __construct($method, array $parameters, $id = null)
+    public function __construct($method, $parameters = null, $id = null)
     {
         $this->method = $method;
         $this->parameters = $parameters;
