@@ -12,6 +12,6 @@ interface RpcRequestInterface
     /** @return string */
     public function getMethod();
 
-    /** @return array */
+    /** @return \StdClass|\StdClass[]|null */
     public function getParameters();
 }
