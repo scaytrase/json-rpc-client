@@ -26,4 +26,7 @@ interface JsonRpcResponseInterface extends RpcResponseInterface
 
     /** @return string|null Response ID or null for notification pseudo-response */
     public function getId();
+
+    /** @return JsonRpcErrorInterface */
+    public function getError();
 }

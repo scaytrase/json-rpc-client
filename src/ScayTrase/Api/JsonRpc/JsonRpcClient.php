@@ -53,7 +53,7 @@ final class JsonRpcClient implements RpcClientInterface
     public function invoke($calls)
     {
         if (!is_array($calls) && ($calls instanceof RpcRequestInterface)) {
-            $calls = (array)$calls;
+            $calls = [$calls];
         }
 
         $requests = [];
