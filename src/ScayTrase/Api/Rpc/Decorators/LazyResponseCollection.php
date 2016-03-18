@@ -6,7 +6,11 @@
  * Time: 10:34
  */
 
-namespace ScayTrase\Api\Rpc;
+namespace ScayTrase\Api\Rpc\Decorators;
+
+use ScayTrase\Api\Rpc\ResponseCollectionInterface;
+use ScayTrase\Api\Rpc\RpcClientInterface;
+use ScayTrase\Api\Rpc\RpcRequestInterface;
 
 final class LazyResponseCollection implements \IteratorAggregate, ResponseCollectionInterface
 {

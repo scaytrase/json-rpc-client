@@ -6,7 +6,9 @@
  * Time: 10:31
  */
 
-namespace ScayTrase\Api\Rpc;
+namespace ScayTrase\Api\Rpc\Decorators;
+
+use ScayTrase\Api\Rpc\RpcClientInterface;
 
 final class LazyRpcClient implements RpcClientInterface
 {
