@@ -40,8 +40,9 @@ final class CacheableRpcClient implements RpcClientInterface
     {
         $this->decoratedClient = $decoratedClient;
         $this->cache           = $cache;
-        $this->extractor       = new RequestKeyExtractor((string)$keyPrefix);
         $this->ttl             = $ttl;
+
+        $this->extractor       = new RequestKeyExtractor((string)$keyPrefix);
     }
 
     /** {@inheritdoc} */

@@ -62,9 +62,8 @@ final class CacheableResponseCollection implements \IteratorAggregate, ResponseC
             return $item->get();
         }
 
-        $data = $this->proxiedCollection->getResponse($request);
         $item->expiresAfter($this->ttl);
-        $item->set($data);
+        $item->set($this->proxiedCollection->getResponse($request));
 
         $this->cache->save($item);
 

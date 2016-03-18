@@ -3,8 +3,6 @@
 namespace ScayTrase\Api\Rpc\Tests;
 
 use ScayTrase\Api\Rpc\Decorators\LazyRpcClient;
-use ScayTrase\Api\Rpc\ResponseCollectionInterface;
-use ScayTrase\Api\Rpc\RpcClientInterface;
 use ScayTrase\Api\Rpc\RpcRequestInterface;
 use ScayTrase\Api\Rpc\RpcResponseInterface;
 
@@ -28,12 +26,10 @@ class LazyClientTest extends AbstractRpcTest
 
         /** @var RpcRequestInterface[] $requests */
         $requests = [$rq1, $rq2, $rq3];
+        /** @var RpcResponseInterface[] $responses */
+        $responses = [$rs1, $rs2, $rs3];
 
-        $collection = null;
-        $collection = $this->getCollectionMock($rq1, $rs1, $collection);
-        $collection = $this->getCollectionMock($rq2, $rs2, $collection);
-        $collection = $this->getCollectionMock($rq3, $rs3, $collection);
-        $client     = $this->getClientMock($requests, $collection);
+        $client = $this->getClientMock($requests, $responses);
 
 
         $lazyClient = new LazyRpcClient($client);
@@ -45,9 +41,6 @@ class LazyClientTest extends AbstractRpcTest
         self::assertEquals($c1, $c2);
         self::assertEquals($c1, $c3);
 
-
-        /** @var RpcResponseInterface[] $responses */
-        $responses = [$rs1, $rs2, $rs3];
 
         foreach ($requests as $id => $request) {
 
