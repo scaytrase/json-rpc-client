@@ -1,7 +1,6 @@
 composer.lock
 composer.phar
 vendor/
-.idea/
 
 build/
 target/
