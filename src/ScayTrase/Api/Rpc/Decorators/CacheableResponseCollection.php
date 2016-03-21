@@ -71,12 +71,6 @@ final class CacheableResponseCollection implements \IteratorAggregate, ResponseC
     }
 
     /** {@inheritdoc} */
-    public function count()
-    {
-        return count($this->items) + $this->proxiedCollection->count();
-    }
-
-    /** {@inheritdoc} */
     public function getIterator()
     {
         foreach ($this->items as $key => $data) {
