@@ -131,11 +131,4 @@ final class JsonRpcResponseCollection implements \IteratorAggregate, ResponseCol
 
         return $this->hashedResponses[spl_object_hash($request)];
     }
-
-    /** {@inheritdoc} */
-    public function count()
-    {
-        $this->sync();
-        return count($this->responses);
-    }
 }

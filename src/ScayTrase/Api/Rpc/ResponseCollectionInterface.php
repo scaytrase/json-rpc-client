@@ -9,7 +9,7 @@ namespace ScayTrase\Api\Rpc;
 
 use ScayTrase\Api\Rpc\Exception\RpcExceptionInterface;
 
-interface ResponseCollectionInterface extends \Countable, \Traversable
+interface ResponseCollectionInterface extends \Traversable
 {
     /**
      * @param RpcRequestInterface $request

@@ -48,16 +48,6 @@ final class LazyResponseCollection implements \IteratorAggregate, ResponseCollec
         $this->initialized = true;
     }
 
-    /** {@inheritdoc} */
-    public function count()
-    {
-        if (!$this->initialized) {
-            $this->init();
-        }
-
-        return $this->collection->count();
-    }
-
     public function append(RpcRequestInterface $request)
     {
         if ($this->isFrozen()) {

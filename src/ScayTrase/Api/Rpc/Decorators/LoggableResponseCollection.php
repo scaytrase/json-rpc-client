@@ -11,6 +11,7 @@ namespace ScayTrase\Api\Rpc\Decorators;
 use Psr\Log\LoggerInterface;
 use ScayTrase\Api\Rpc\ResponseCollectionInterface;
 use ScayTrase\Api\Rpc\RpcRequestInterface;
+use ScayTrase\Api\Rpc\RpcResponseInterface;
 
 final class LoggableResponseCollection implements \IteratorAggregate, ResponseCollectionInterface
 {
@@ -18,6 +19,8 @@ final class LoggableResponseCollection implements \IteratorAggregate, ResponseCo
     private $logger;
     /** @var  ResponseCollectionInterface */
     private $decoratedCollection;
+    /** @var string[]  */
+    private $loggedResponses = [];
 
     /**
      * LoggableResponseCollection constructor.
@@ -35,43 +38,72 @@ final class LoggableResponseCollection implements \IteratorAggregate, ResponseCo
     public function getResponse(RpcRequestInterface $request)
     {
         $response = $this->decoratedCollection->getResponse($request);
-
-        $this->logger->debug(
-            sprintf(
-                '%s Response for RPC method "%s" is %s',
-                spl_object_hash($request),
-                $request->getMethod(),
-                $response->isSuccessful() ? 'Successful' : 'Failed'
-            ),
-            json_decode(json_encode($response->getBody()), true)
-        );
-        if ($response->isSuccessful()) {
-            $this->logger->debug(
-                sprintf('%s Response for RPC method "%s"', spl_object_hash($request), $request->getMethod()),
-                json_decode(json_encode($response->getBody()), true)
-            );
-        } else {
-            $this->logger->debug(
-                sprintf('%s Response for RPC method "%s"', spl_object_hash($request), $request->getMethod()),
-                json_decode(json_encode($response->getError()), true)
-            );
-        }
+        $this->logResponseWithRequest($request, $response);
 
         return $response;
-    }
-
-    /** {@inheritdoc} */
-    public function count()
-    {
-        return $this->decoratedCollection->count();
     }
 
     /** {@inheritdoc} */
     public function getIterator()
     {
         foreach ($this->decoratedCollection as $response) {
-            //todo: log
+            $this->logResponse($response);
             yield $response;
         }
+    }
+
+    /**
+     * @param RpcRequestInterface $request
+     * @param RpcResponseInterface $response
+     */
+    private function logResponseWithRequest(RpcRequestInterface $request, RpcResponseInterface $response)
+    {
+        $hash = spl_object_hash($response);
+        if (in_array($hash, $this->loggedResponses, true)) {
+            return;
+        }
+
+        if ($response->isSuccessful()) {
+            $this->logger->info(
+                sprintf('Method "%s" call was successful', $request->getMethod()),
+                ['request_hash' => spl_object_hash($request)]
+            );
+            $this->logger->debug(
+                sprintf("Resposne:\n%s", json_encode($response->getBody(), JSON_PRETTY_PRINT)),
+                ['request_hash' => spl_object_hash($request)]
+            );
+        } else {
+            $this->logger->info(
+                sprintf('Method "%s" call was failed', $request->getMethod()),
+                ['request_hash' => spl_object_hash($request)]
+            );
+            $this->logger->error(
+                sprintf('ERROR %s: %s', $response->getError()->getCode(), $response->getError()->getMessage()),
+                ['request_hash' => spl_object_hash($request)]
+            );
+        }
+
+        $this->loggedResponses[] = $hash;
+    }
+
+    private function logResponse(RpcResponseInterface $response)
+    {
+        $hash = spl_object_hash($response);
+        if (in_array($hash, $this->loggedResponses, true)) {
+            return;
+        }
+
+        if ($response->isSuccessful()) {
+            $this->logger->info('Successful RPC call');
+            $this->logger->debug(
+                sprintf("Resposne:\n%s", json_encode($response->getBody(), JSON_PRETTY_PRINT))
+            );
+        } else {
+            $this->logger->error(
+                sprintf('RPC Error %s: %s', $response->getError()->getCode(), $response->getError()->getMessage())
+            );
+        }
+
+        $this->loggedResponses[] = $hash;
     }
 }
