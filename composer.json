@@ -11,6 +11,7 @@
   "minimum-stability": "stable",
   "require": {
     "php": "~5.5|~7.0",
+    "scaytrase/rpc-common": "~1.0",
     "psr/log": "~1.0",
     "guzzlehttp/guzzle": "~6.0",
     "paragonie/random_compat": "~1.1@stable"
