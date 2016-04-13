@@ -11,12 +11,12 @@
   "minimum-stability": "stable",
   "require": {
     "php": "~5.5|~7.0",
+    "psr/log": "~1.0",
     "guzzlehttp/guzzle": "~6.0",
     "paragonie/random_compat": "~1.1@stable"
   },
   "require-dev": {
     "phpunit/phpunit": "~4.5|~5.1",
-    "psr/log": "~1.0",
     "psr/cache": "~1.0"
   },
   "autoload": {
@@ -25,7 +25,6 @@
     }
   },
   "suggest": {
-    "psr/log": "For LoggableRpcClient decorator",
     "psr/cache": "For CacheableRpcClient decorator"
   }
 }

@@ -78,7 +78,7 @@ final class JsonRpcResponseCollection implements \IteratorAggregate, ResponseCol
         }
 
 
-        if (!is_array($rawResponses) && $rawResponses instanceof \StdClass) {
+        if (!is_array($rawResponses) && $rawResponses instanceof \stdClass) {
             $rawResponses = [$rawResponses];
         }
 

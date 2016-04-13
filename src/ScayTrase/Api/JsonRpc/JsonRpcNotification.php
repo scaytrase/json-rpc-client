@@ -11,15 +11,15 @@ final class JsonRpcNotification implements JsonRpcRequestInterface
 {
     /** @var  string */
     private $method;
-    /** @var  array */
+    /** @var  \stdClass|array|null */
     private $parameters;
 
     /**
      * JsonRpcNotificationRequest constructor.
      * @param string $method
-     * @param array $parameters
+     * @param \stdClass|array|null $parameters
      */
-    public function __construct($method, array $parameters)
+    public function __construct($method, $parameters)
     {
         $this->method = $method;
         $this->parameters = $parameters;
@@ -47,5 +47,21 @@ final class JsonRpcNotification implements JsonRpcRequestInterface
     public function getParameters()
     {
         return $this->parameters;
+    }
+
+    /** {@inheritdoc} */
+    public function getVersion()
+    {
+        return JsonRpcClient::VERSION;
+    }
+
+    /** {@inheritdoc} */
+    public function jsonSerialize()
+    {
+        return [
+            self::VERSION_FIELD => JsonRpcClient::VERSION,
+            self::METHOD_FIELD => $this->getMethod(),
+            self::PARAMETERS_FIELD => $this->getParameters(),
+        ];
     }
 }

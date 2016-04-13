@@ -11,17 +11,17 @@ use ScayTrase\Api\JsonRpc\Exception\ResponseParseException;
 
 final class SyncResponse implements JsonRpcResponseInterface
 {
-    /** @var  \StdClass */
+    /** @var  \stdClass */
     private $response;
     /** @var  JsonRpcError */
     private $error;
 
     /**
      * SyncResponse constructor.
-     * @param \StdClass $response
+     * @param \stdClass $response
      * @throws ResponseParseException on creating response for notification
      */
-    public function __construct(\StdClass $response)
+    public function __construct(\stdClass $response)
     {
         $this->response = $response;
 
@@ -45,13 +45,13 @@ final class SyncResponse implements JsonRpcResponseInterface
         $rawError = $this->response->error;
 
         $data = null;
-        if (property_exists($rawError, JsonRpcResponseInterface::ERROR_DATA_FIELD)) {
+        if (property_exists($rawError, JsonRpcErrorInterface::ERROR_DATA_FIELD)) {
             $data = $rawError->data;
         }
 
         $this->error = new JsonRpcError(
-            $rawError->{JsonRpcResponseInterface::ERROR_CODE_FIELD},
-            $rawError->{JsonRpcResponseInterface::ERROR_MESSAGE_FIELD},
+            $rawError->{JsonRpcErrorInterface::ERROR_CODE_FIELD},
+            $rawError->{JsonRpcErrorInterface::ERROR_MESSAGE_FIELD},
             $data
         );
 
@@ -74,17 +74,36 @@ final class SyncResponse implements JsonRpcResponseInterface
         return $this->response->result;
     }
 
-    /**
-     * @return string JSON-RPC version
-     */
+    /** {@inheritdoc} */
     public function getVersion()
     {
         return $this->response->jsonrpc;
     }
 
-    /** @return string|null Response ID or null for notification pseudo-response */
+    /** {@inheritdoc} */
     public function getId()
     {
         return $this->response->id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        $result = [
+            self::VERSION_FIELD => JsonRpcClient::VERSION,
+            self::ID_FIELD => $this->getId(),
+        ];
+
+        if ($this->isSuccessful()) {
+            $result[self::RESULT_FIELD] = $this->getBody();
+        }
+
+        if (!$this->isSuccessful()) {
+            $result[self::ERROR_FIELD] = $this->getError();
+        }
+
+        return $result;
     }
 }

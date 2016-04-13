@@ -13,10 +13,10 @@ use ScayTrase\Api\JsonRpc\Exception\ResponseParseException;
 final class ResponseBodyValidator
 {
     /**
-     * @param \StdClass $response
+     * @param \stdClass $response
      * @throws ResponseParseException
      */
-    public function validate(\StdClass $response)
+    public function validate(\stdClass $response)
     {
         if (property_exists($response, JsonRpcResponseInterface::ERROR_FIELD) && property_exists($response, JsonRpcResponseInterface::RESULT_FIELD)) {
             throw ResponseParseException::bothErrorAndResultPresent();
@@ -43,10 +43,10 @@ final class ResponseBodyValidator
                 throw ResponseParseException::errorIsNotAnObject();
             }
 
-            if (!property_exists($response->{JsonRpcResponseInterface::ERROR_FIELD}, JsonRpcResponseInterface::ERROR_CODE_FIELD)) {
+            if (!property_exists($response->{JsonRpcResponseInterface::ERROR_FIELD}, JsonRpcErrorInterface::ERROR_CODE_FIELD)) {
                 throw ResponseParseException::noErrorCodePresent();
             }
-            if (!property_exists($response->{JsonRpcResponseInterface::ERROR_FIELD}, JsonRpcResponseInterface::ERROR_MESSAGE_FIELD)) {
+            if (!property_exists($response->{JsonRpcResponseInterface::ERROR_FIELD}, JsonRpcErrorInterface::ERROR_MESSAGE_FIELD)) {
                 throw ResponseParseException::noErrorMessagePresent();
             }
 

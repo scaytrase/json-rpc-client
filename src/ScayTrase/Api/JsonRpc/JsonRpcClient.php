@@ -11,6 +11,8 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\UriInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use ScayTrase\Api\IdGenerator\IdGeneratorInterface;
 use ScayTrase\Api\IdGenerator\UuidGenerator;
 use ScayTrase\Api\Rpc\Exception\RemoteCallFailedException;
@@ -29,21 +31,34 @@ final class JsonRpcClient implements RpcClientInterface
     private $uri;
     /** @var IdGeneratorInterface */
     private $idGenerator;
+    /** @var LoggerInterface */
+    private $logger;
 
     /**
      * JsonRpcClient constructor.
      * @param ClientInterface $client
      * @param UriInterface $endpoint
      * @param IdGeneratorInterface|null $idGenerator
+     * @param LoggerInterface $logger
      */
-    public function __construct(ClientInterface $client, UriInterface $endpoint, IdGeneratorInterface $idGenerator = null)
+    public function __construct(
+        ClientInterface $client,
+        UriInterface $endpoint,
+        IdGeneratorInterface $idGenerator = null,
+        LoggerInterface $logger = null
+    )
     {
         $this->client = $client;
         $this->uri = $endpoint;
         $this->idGenerator = $idGenerator;
+        $this->logger = $logger;
 
         if (null === $this->idGenerator) {
             $this->idGenerator = new UuidGenerator();
+        }
+
+        if (null === $this->logger) {
+            $this->logger = new NullLogger();
         }
     }
 
@@ -52,21 +67,40 @@ final class JsonRpcClient implements RpcClientInterface
      */
     public function invoke($calls)
     {
-        if (!is_array($calls) && ($calls instanceof RpcRequestInterface)) {
-            $calls = [$calls];
+        try {
+            if (!is_array($calls) && ($calls instanceof RpcRequestInterface)) {
+                $transformedCall = $this->transformCall($calls);
+                return new JsonRpcResponseCollection(
+                    $this->client->sendAsync(
+                        $this->createHttpRequest($transformedCall)
+                    ),
+                    [new RequestTransformation($calls, $transformedCall)]
+                );
+            }
+
+            $requests = [];
+            $batchRequest = [];
+
+            foreach ($calls as $key => $call) {
+                $transformedCall = $this->transformCall($call);
+                $requests[spl_object_hash($call)] = new RequestTransformation($call, $transformedCall);
+                $batchRequest[] = $transformedCall;
+            }
+
+            return new JsonRpcResponseCollection($this->client->sendAsync($this->createHttpRequest($batchRequest)), $requests);
+        } catch (GuzzleException $exception) {
+            throw new RemoteCallFailedException($exception->getMessage(), 0, $exception);
         }
+    }
 
-        $requests = [];
-        $requestBody = [];
-
-        foreach ($calls as $key => $call) {
-            $transformedCall = $this->transformCall($call);
-            $requests[spl_object_hash($call)] = new RequestTransformation($call, $transformedCall);
-            $requestBody[] = $this->formatJsonRpcCall($transformedCall);
-        }
-
+    /**
+     * @param $requestBody
+     * @return Request
+     */
+    private function createHttpRequest($requestBody)
+    {
         /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
-        $request = new Request(
+        return new Request(
             'POST',
             $this->uri,
             [
@@ -75,12 +109,6 @@ final class JsonRpcClient implements RpcClientInterface
             ],
             json_encode($requestBody, JSON_PRETTY_PRINT)
         );
-
-        try {
-            return new JsonRpcResponseCollection($this->client->sendAsync($request), $requests);
-        } catch (GuzzleException $exception) {
-            throw new RemoteCallFailedException($exception->getMessage(), 0, $exception);
-        }
     }
 
     /**
@@ -95,24 +123,5 @@ final class JsonRpcClient implements RpcClientInterface
             return $transformedCall;
         }
         return $transformedCall;
-    }
-
-    /**
-     * @param JsonRpcRequestInterface|RpcRequestInterface $request
-     * @return array
-     */
-    private function formatJsonRpcCall(JsonRpcRequestInterface $request)
-    {
-        $result = [
-            'jsonrpc' => static::VERSION,
-            'method' => $request->getMethod(),
-            'params' => $request->getParameters(),
-        ];
-
-        if (!$request->isNotification()) {
-            $result['id'] = $request->getId();
-        }
-
-        return $result;
     }
 }

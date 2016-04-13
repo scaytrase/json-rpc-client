@@ -37,22 +37,22 @@ class ResponseBodyValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param \StdClass $body
+     * @param \stdClass $body
      *
 *@dataProvider invalidResponseBodyProvider
      * @expectedException \ScayTrase\Api\JsonRpc\Exception\ResponseParseException
      */
-    public function testInvalidBody(\StdClass $body)
+    public function testInvalidBody(\stdClass $body)
     {
         $parser = new ResponseBodyValidator();
         $parser->validate($body);
     }
 
     /**
-     * @param \StdClass $body
+     * @param \stdClass $body
      * @dataProvider validResponseBodyProvider
      */
-    public function testValidBody(\StdClass $body)
+    public function testValidBody(\stdClass $body)
     {
         $parser = new ResponseBodyValidator();
         $parser->validate($body);

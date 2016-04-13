@@ -38,4 +38,13 @@ final class JsonRpcNotificationResponse implements JsonRpcResponseInterface
     {
         return null;
     }
+
+    /**
+     * {@inheritdoc}
+     * @throws \LogicException
+     */
+    public function jsonSerialize()
+    {
+        throw new \LogicException('Notification should not have transferable response representation');
+    }
 }

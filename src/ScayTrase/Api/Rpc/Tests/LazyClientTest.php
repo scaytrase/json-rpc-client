@@ -50,7 +50,7 @@ class LazyClientTest extends AbstractRpcTest
             self::assertTrue($c1->isFrozen());
             self::assertEquals($response, $responses[$id]);
             self::assertTrue($response->isSuccessful());
-            self::assertInstanceOf(\StdClass::class, $response->getBody());
+            self::assertInstanceOf(\stdClass::class, $response->getBody());
             self::assertEquals($request->getParameters(), $response->getBody());
         }
     }

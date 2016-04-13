@@ -10,7 +10,7 @@ namespace ScayTrase\Api\JsonRpc;
 use ScayTrase\Api\Rpc\RpcRequestInterface;
 
 /** @internal */
-class RequestTransformation
+final class RequestTransformation
 {
     /** @var  RpcRequestInterface */
     private $originalCall;

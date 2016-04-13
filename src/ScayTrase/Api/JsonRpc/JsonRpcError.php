@@ -13,37 +13,52 @@ final class JsonRpcError implements JsonRpcErrorInterface
     private $code;
     /** @var string */
     private $message;
-    /** @var null|\StdClass */
+    /** @var null|\stdClass */
     private $data;
 
     /**
      * JsonRpcError constructor.
      * @param int $code
      * @param string $message
-     * @param \StdClass|null $data
+     * @param \stdClass|mixed|null $data
      */
-    public function __construct($code, $message, \StdClass $data = null)
+    public function __construct($code, $message, $data = null)
     {
         $this->code = $code;
         $this->message = $message;
         $this->data = $data;
     }
 
-    /** @return int */
+    /** {@inheritdoc} */
     public function getCode()
     {
         return $this->code;
     }
 
-    /** @return string */
+    /** {@inheritdoc} */
     public function getMessage()
     {
         return $this->message;
     }
 
-    /** @return \StdClass|null error data */
+    /** {@inheritdoc} */
     public function getData()
     {
         return $this->data;
+    }
+
+    /** {@inheritdoc} */
+    public function jsonSerialize()
+    {
+        $error = [
+            self::ERROR_CODE_FIELD => $this->getCode(),
+            self::ERROR_MESSAGE_FIELD => $this->getMessage(),
+        ];
+
+        if (null !== ($data = $this->getData())) {
+            $error[self::ERROR_DATA_FIELD] = $data;
+        }
+
+        return $error;
     }
 }

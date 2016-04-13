@@ -15,13 +15,13 @@ final class JsonRpcRequest implements JsonRpcRequestInterface
     private $id;
     /** @var  string */
     private $method;
-    /** @var  \StdClass|\StdClass[]|null */
+    /** @var  \stdClass|array|null */
     private $parameters;
 
     /**
      * JsonRpcRequest constructor.
      * @param string $method
-     * @param \StdClass|\StdClass[]|null $parameters
+     * @param \stdClass|array|null $parameters
      * @param string $id
      */
     public function __construct($method, $parameters = null, $id = null)
@@ -63,5 +63,35 @@ final class JsonRpcRequest implements JsonRpcRequestInterface
     public function getParameters()
     {
         return $this->parameters;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize()
+    {
+        $result = [
+            self::VERSION_FIELD => JsonRpcClient::VERSION,
+            self::METHOD_FIELD => $this->getMethod(),
+            self::PARAMETERS_FIELD => $this->getParameters(),
+        ];
+
+        if (!$this->isNotification()) {
+            $result[self::ID_FIELD] = $this->getId();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Returns version of the JSON-RPC request
+     *
+     * A String specifying the version of the JSON-RPC protocol. MUST be exactly "2.0".
+     *
+     * @return string JSON-RPC version
+     */
+    public function getVersion()
+    {
+        return JsonRpcClient::VERSION;
     }
 }
