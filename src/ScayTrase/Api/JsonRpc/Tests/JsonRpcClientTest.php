@@ -64,8 +64,8 @@ class JsonRpcClientTest extends AbstractJsonRpcClientTest
                 $content = $request->getBody()->getContents();
                 $data = json_decode($content);
                 if ($isArray) {
-                    self::assertTrue(is_array($data));
-                    self::assertNotEmpty($data);
+                    $self::assertTrue(is_array($data));
+                    $self::assertNotEmpty($data);
                     $data = array_shift($data);
                 }
                 $self::assertEquals(JSON_ERROR_NONE, json_last_error());
@@ -86,8 +86,8 @@ class JsonRpcClientTest extends AbstractJsonRpcClientTest
                 );
             }
         );
-        $client = new JsonRpcClient($guzzle->reveal(), new Uri('http://localhost/'));
-        return $client;
+
+        return new JsonRpcClient($guzzle->reveal(), new Uri('http://localhost/'));
     }
 
     /**
