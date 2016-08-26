@@ -8,19 +8,13 @@
 [![Total Downloads](https://poser.pugx.org/scaytrase/json-rpc-client/downloads)](https://packagist.org/packages/scaytrase/json-rpc-client)
 [![Latest Unstable Version](https://poser.pugx.org/scaytrase/json-rpc-client/v/unstable)](https://packagist.org/packages/scaytrase/json-rpc-client)
 
-# RPC Library
+# JSON-RPC 2.0 Client implementation
 
-Built-in support for batch-like requests. Processing depends on client implementation (may not be real batch)
+Extension of [`scaytrase/rpc-common`](https://github.com/scaytrase/rpc-common) 
 
-## Common interfaces
-  * RPC request (call)
-  * RPC response (result)
-  * RPC error
-## Decorators
-  * Lazy client decorator
-  * Loggable client decorator
-  * Cacheable client decorator
-
-# JSON-RPC Implementation
+ * JSON RPC Interfaces
+ * JSON RPC client
+ * Async with Guzzle
+ * Automatic batch with multiple requests or `LazyClientDecorator`
 
 [JSON-RPC 2.0 Specification](http://www.jsonrpc.org/specification)
