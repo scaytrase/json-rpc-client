@@ -13,13 +13,13 @@
 
     <testsuites>
         <testsuite name="JSON-RPC Tests">
-            <directory>./src/</directory>
+            <directory>./JsonRpc/Tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>./src</directory>
+            <directory>./</directory>
             <exclude>
                 <directory>./vendor</directory>
             </exclude>

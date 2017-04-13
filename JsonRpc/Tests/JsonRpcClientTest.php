@@ -1,9 +1,4 @@
 <?php
-/**
- * User: scaytrase
- * Date: 2016-01-03
- * Time: 22:16
- */
 
 namespace ScayTrase\Api\JsonRpc\Tests;
 

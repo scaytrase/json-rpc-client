@@ -1,16 +1,10 @@
 <?php
-/**
- * User: scaytrase
- * Date: 2016-01-03
- * Time: 22:40
- */
 
 namespace ScayTrase\Api\JsonRpc\Tests;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ScayTrase\Api\JsonRpc\JsonRpcNotification;
@@ -26,14 +20,16 @@ abstract class AbstractJsonRpcClientTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->queue = null;
+        $this->queue  = null;
         $this->client = null;
         parent::setUp();
     }
 
     protected function tearDown()
     {
-        self::assertEquals(0, $this->getQueue()->count());
+        if (null !== $this->queue) {
+            self::assertEquals(0, $this->getQueue()->count());
+        }
         parent::tearDown();
     }
 
@@ -43,6 +39,7 @@ abstract class AbstractJsonRpcClientTest extends \PHPUnit_Framework_TestCase
         if (null === $this->queue) {
             $this->queue = new MockHandler();
         }
+
         return $this->queue;
     }
 
@@ -50,7 +47,7 @@ abstract class AbstractJsonRpcClientTest extends \PHPUnit_Framework_TestCase
     protected function getClient()
     {
         if (null === $this->client) {
-            $handler = HandlerStack::create($this->getQueue());
+            $handler      = HandlerStack::create($this->getQueue());
             $this->client = new Client(['handler' => $handler]);
         }
 
@@ -71,14 +68,16 @@ abstract class AbstractJsonRpcClientTest extends \PHPUnit_Framework_TestCase
                     200,
                     [],
                     json_encode(
-                        [[
-                            'jsonrpc' => '2.0',
-                            'id' => $hash,
-                            'error' => [
-                                'code' => $result->getCode(),
-                                'message' => $result->getMessage()
-                            ]
-                        ]]
+                        [
+                            [
+                                'jsonrpc' => '2.0',
+                                'id'      => $hash,
+                                'error'   => [
+                                    'code'    => $result->getCode(),
+                                    'message' => $result->getMessage(),
+                                ],
+                            ],
+                        ]
                     )
                 )
             );
@@ -88,11 +87,13 @@ abstract class AbstractJsonRpcClientTest extends \PHPUnit_Framework_TestCase
                     200,
                     [],
                     json_encode(
-                        [[
-                            'jsonrpc' => '2.0',
-                            'id' => $hash,
-                            'result' => $result
-                        ]]
+                        [
+                            [
+                                'jsonrpc' => '2.0',
+                                'id'      => $hash,
+                                'result'  => $result,
+                            ],
+                        ]
                     )
                 )
             );
