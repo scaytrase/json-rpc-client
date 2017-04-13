@@ -23,7 +23,7 @@
   },
   "autoload": {
     "psr-4": {
-      "ScayTrase\\Api\\": "src/ScayTrase/Api/"
+      "ScayTrase\\Api\\": "./"
     }
   },
   "suggest": {

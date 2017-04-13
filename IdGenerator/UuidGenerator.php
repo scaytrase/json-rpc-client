@@ -1,9 +1,4 @@
 <?php
-/**
- * User: scaytrase
- * Date: 2016-01-02
- * Time: 22:00
- */
 
 namespace ScayTrase\Api\IdGenerator;
 
