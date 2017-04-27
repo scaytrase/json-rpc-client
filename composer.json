@@ -14,11 +14,10 @@
     "scaytrase/rpc-common": "~1.0",
     "psr/log": "~1.0",
     "guzzlehttp/guzzle": "~6.0",
-    "paragonie/random_compat": "~1.1@stable"
+    "paragonie/random_compat": "^1|^2"
   },
   "require-dev": {
-    "phpunit/phpunit": "~4.5|~5.1",
-    "phpunit/php-code-coverage": "~2.1|~3.0",
+    "phpunit/phpunit": "^4.8.35|^5.4|^6.0",
     "psr/cache": "~1.0"
   },
   "autoload": {

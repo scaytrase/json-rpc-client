@@ -7,11 +7,12 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use ScayTrase\Api\JsonRpc\JsonRpcNotification;
 use ScayTrase\Api\JsonRpc\JsonRpcRequest;
 use ScayTrase\Api\Rpc\RpcErrorInterface;
 
-abstract class AbstractJsonRpcClientTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractJsonRpcClientTest extends TestCase
 {
     /** @var  MockHandler */
     protected $queue;
