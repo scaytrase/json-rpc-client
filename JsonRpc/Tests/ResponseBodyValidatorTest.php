@@ -2,10 +2,13 @@
 
 namespace ScayTrase\Api\JsonRpc\Tests;
 
+use PHPUnit\Framework\TestCase;
+use ScayTrase\Api\JsonRpc\JsonRpcClient;
 use ScayTrase\Api\JsonRpc\JsonRpcErrorInterface;
 use ScayTrase\Api\JsonRpc\ResponseBodyValidator;
+use ScayTrase\Api\JsonRpc\SyncResponse;
 
-class ResponseBodyValidatorTest extends \PHPUnit_Framework_TestCase
+class ResponseBodyValidatorTest extends TestCase
 {
     public function invalidResponseBodyProvider()
     {
@@ -85,7 +88,6 @@ class ResponseBodyValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidBody(\stdClass $body)
     {
-        $parser = new ResponseBodyValidator();
-        $parser->validate($body);
+        self::assertEquals(JsonRpcClient::VERSION, (new SyncResponse($body))->getVersion());
     }
 }

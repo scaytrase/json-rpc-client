@@ -44,7 +44,6 @@ final class ResponseBodyValidator
             if (!property_exists($response->{JsonRpcResponseInterface::ERROR_FIELD}, JsonRpcErrorInterface::ERROR_MESSAGE_FIELD)) {
                 throw ResponseParseException::noErrorMessagePresent();
             }
-
         }
     }
 }
