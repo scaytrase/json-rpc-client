@@ -22,13 +22,12 @@ Extension of [`scaytrase/rpc-common`](https://github.com/scaytrase/rpc-common)
 ## Usage
 
 1. Configure a [Guzzle client](http://docs.guzzlephp.org/en/latest/).
-2. Configure a Guzzle URI instance
-3. Instantiate the client:
+2. Instantiate the client:
 
 ```php
 use ScayTrase\Api\JsonRpc\JsonRpcClient;
 
-$client = new JsonRpcClient($guzzleClient, new Uri('http://endpoint/url/'));
+$client = new JsonRpcClient($guzzleClient, 'http://endpoint/url/');
 ```
 
 4. Optionally pass the ID generator as third argument and the PSR-3 logger as the fourth argument
@@ -92,11 +91,10 @@ $response = $collection->getResponse($request);
 ## Decorating
 
 Refer [`scaytrase/rpc-common`](https://github.com/scaytrase/rpc-common) base library for some
-useful decorators, i.e `CacheableRpcClient`, `LazyRpcClient`, `LoggableRpcClient`.
+useful decorators:
 
-Also some profiling wrappers for Symfony usage were implemented:
-
- * [Profiled client](https://github.com/bankiru/doctrine-api-bundle/blob/master/src/Bankiru/Api/Client/Profiling/ProfiledClient.php)
- with DataCollector and Profiler integration
- * [Traceable client](https://github.com/bankiru/doctrine-api-bundle/blob/master/src/Bankiru/Api/Client/Profiling/TraceableClient.php)
- with Stopwatch integration
+* `CacheableRpcClient`
+* `LazyRpcClient`
+* `LoggableRpcClient`
+* `ProfiledClient`
+* `TraceableClient`

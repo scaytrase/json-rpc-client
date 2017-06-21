@@ -39,12 +39,4 @@ final class RequestTransformation
     {
         return $this->transformedCall;
     }
-
-    /**
-     * @return bool
-     */
-    public function isTransformed()
-    {
-        return $this->originalCall !== $this->transformedCall;
-    }
 }

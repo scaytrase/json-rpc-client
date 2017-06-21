@@ -18,11 +18,9 @@ final class JsonRpcClient implements RpcClientInterface
 {
     const VERSION = '2.0';
 
-    /**
-     * @var ClientInterface
-     */
+    /** @var ClientInterface */
     private $client;
-    /** @var UriInterface */
+    /** @var UriInterface|string */
     private $uri;
     /** @var IdGeneratorInterface */
     private $idGenerator;
@@ -31,40 +29,36 @@ final class JsonRpcClient implements RpcClientInterface
 
     /**
      * JsonRpcClient constructor.
-     * @param ClientInterface $client
-     * @param UriInterface $endpoint
+     *
+     * @param ClientInterface           $client
+     * @param UriInterface|string       $endpoint
      * @param IdGeneratorInterface|null $idGenerator
-     * @param LoggerInterface $logger
+     * @param LoggerInterface           $logger
      */
     public function __construct(
         ClientInterface $client,
-        UriInterface $endpoint,
+        $endpoint,
         IdGeneratorInterface $idGenerator = null,
         LoggerInterface $logger = null
-    )
-    {
-        $this->client = $client;
-        $this->uri = $endpoint;
-        $this->idGenerator = $idGenerator;
-        $this->logger = $logger;
-
-        if (null === $this->idGenerator) {
-            $this->idGenerator = new UuidGenerator();
-        }
-
-        if (null === $this->logger) {
-            $this->logger = new NullLogger();
-        }
+    ) {
+        $this->client      = $client;
+        $this->uri         = $endpoint;
+        $this->idGenerator = $idGenerator ?: new UuidGenerator();
+        $this->logger      = $logger ?: new NullLogger();
     }
 
-    /**
-     * {@inheritdoc}
-     */
+    /** {@inheritdoc} */
     public function invoke($calls)
     {
         try {
-            if (!is_array($calls) && ($calls instanceof RpcRequestInterface)) {
+            if (!is_array($calls)) {
+                if (!($calls instanceof RpcRequestInterface)) {
+                    throw new \InvalidArgumentException(
+                        'Request should be either array or single RpcRequestInterface instance'
+                    );
+                }
                 $transformedCall = $this->transformCall($calls);
+
                 return new JsonRpcResponseCollection(
                     $this->client->sendAsync(
                         $this->createHttpRequest($transformedCall)
@@ -73,16 +67,20 @@ final class JsonRpcClient implements RpcClientInterface
                 );
             }
 
-            $requests = [];
+            $requests     = [];
             $batchRequest = [];
 
             foreach ($calls as $key => $call) {
-                $transformedCall = $this->transformCall($call);
+                $transformedCall                  = $this->transformCall($call);
                 $requests[spl_object_hash($call)] = new RequestTransformation($call, $transformedCall);
-                $batchRequest[] = $transformedCall;
+                $batchRequest[]                   = $transformedCall;
             }
 
-            return new JsonRpcResponseCollection($this->client->sendAsync($this->createHttpRequest($batchRequest)), $requests);
+            return new JsonRpcResponseCollection(
+                $this->client->sendAsync($this->createHttpRequest($batchRequest)),
+                $requests,
+                $this->logger
+            );
         } catch (GuzzleException $exception) {
             throw new RemoteCallFailedException($exception->getMessage(), 0, $exception);
         }
@@ -90,17 +88,17 @@ final class JsonRpcClient implements RpcClientInterface
 
     /**
      * @param $requestBody
+     *
      * @return Request
      */
     private function createHttpRequest($requestBody)
     {
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         return new Request(
             'POST',
             $this->uri,
             [
                 'Content-Type' => 'application/json',
-                'Accept' => 'application/json'
+                'Accept'       => 'application/json',
             ],
             json_encode($requestBody, JSON_PRETTY_PRINT)
         );
@@ -108,15 +106,15 @@ final class JsonRpcClient implements RpcClientInterface
 
     /**
      * @param RpcRequestInterface $call
-     * @return JsonRpcRequest
+     *
+     * @return JsonRpcRequestInterface
      */
     private function transformCall(RpcRequestInterface $call)
     {
-        $transformedCall = $call;
-        if ($call instanceof RpcRequestInterface && !($call instanceof JsonRpcRequestInterface)) {
-            $transformedCall = JsonRpcRequest::fromRpcRequest($call, $this->idGenerator->getRequestIdentifier($call));
-            return $transformedCall;
+        if ($call instanceof JsonRpcRequestInterface) {
+            return $call;
         }
-        return $transformedCall;
+
+        return JsonRpcRequest::fromRpcRequest($call, $this->idGenerator->getRequestIdentifier($call));
     }
 }

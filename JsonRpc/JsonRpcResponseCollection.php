@@ -2,8 +2,11 @@
 
 namespace ScayTrase\Api\JsonRpc;
 
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use ScayTrase\Api\JsonRpc\Exception\JsonRpcProtocolException;
 use ScayTrase\Api\JsonRpc\Exception\ResponseParseException;
 use ScayTrase\Api\Rpc\Exception\RemoteCallFailedException;
@@ -19,7 +22,7 @@ use ScayTrase\Api\Rpc\RpcRequestInterface;
 final class JsonRpcResponseCollection implements \IteratorAggregate, ResponseCollectionInterface
 {
     /** @var JsonRpcResponseInterface[] */
-    protected $hashedResponses = [];
+    private $hashedResponses = [];
     /** @var  RequestTransformation[] */
     private $transformations;
     /** @var  PromiseInterface */
@@ -29,67 +32,30 @@ final class JsonRpcResponseCollection implements \IteratorAggregate, ResponseCol
 
     /** @var bool */
     private $synchronized = false;
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * JsonRpcResponseCollection constructor.
      * @param PromiseInterface $promise
      * @param RequestTransformation[] $transformations
+     * @param LoggerInterface|null $logger
      */
-    public function __construct(PromiseInterface $promise, array $transformations)
+    public function __construct(PromiseInterface $promise, array $transformations, LoggerInterface $logger = null)
     {
         $this->promise = $promise;
         $this->transformations = $transformations;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /** {@inheritdoc} */
     public function getIterator()
     {
         $this->sync();
+
         return new \ArrayIterator($this->responses);
-    }
-
-    private function sync()
-    {
-        if ($this->synchronized) {
-            return;
-        }
-
-        /** @var ResponseInterface $clientResponse */
-        $clientResponse = $this->promise->wait();
-        if (200 !== $clientResponse->getStatusCode()) {
-            throw new RemoteCallFailedException();
-        }
-
-        $data = (string)$clientResponse->getBody();
-
-        // Null (empty response) is expected if only notifications were sent
-        $rawResponses = [];
-
-        if ('' !== $data) {
-            $rawResponses = json_decode($data, false);
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                throw ResponseParseException::notAJsonResponse();
-            }
-        }
-
-
-        if (!is_array($rawResponses) && $rawResponses instanceof \stdClass) {
-            $rawResponses = [$rawResponses];
-        }
-
-        $this->responses = [];
-        foreach ($rawResponses as $rawResponse) {
-            try {
-                $response = new SyncResponse($rawResponse);
-            } catch (ResponseParseException $exception) {
-                //todo: logging??? (@scaytrase)
-                continue;
-            }
-
-            $this->responses[$response->getId()] = $response;
-        }
-
-        $this->synchronized = true;
     }
 
     /** {@inheritdoc} */
@@ -115,6 +81,7 @@ final class JsonRpcResponseCollection implements \IteratorAggregate, ResponseCol
 
         if ($storedRequest->isNotification()) {
             $this->hashedResponses[spl_object_hash($request)] = new JsonRpcNotificationResponse();
+
             return $this->hashedResponses[spl_object_hash($request)];
         }
 
@@ -125,5 +92,58 @@ final class JsonRpcResponseCollection implements \IteratorAggregate, ResponseCol
         $this->hashedResponses[spl_object_hash($request)] = $this->responses[$storedRequest->getId()];
 
         return $this->hashedResponses[spl_object_hash($request)];
+    }
+
+    private function sync()
+    {
+        if ($this->synchronized) {
+            return;
+        }
+
+        try {
+            /** @var ResponseInterface $clientResponse */
+            $clientResponse = $this->promise->wait();
+            if (200 !== $clientResponse->getStatusCode()) {
+                throw new RemoteCallFailedException('Response was not successful');
+            }
+        } catch (GuzzleException $exception) {
+            throw new RemoteCallFailedException($exception->getMessage(), 0, $exception);
+        }
+
+        $data = (string)$clientResponse->getBody();
+
+        // Null (empty response) is expected if only notifications were sent
+        $rawResponses = [];
+
+        if ('' !== $data) {
+            $rawResponses = json_decode($data, false);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw ResponseParseException::notAJsonResponse();
+            }
+        }
+
+        if (!is_array($rawResponses) && $rawResponses instanceof \stdClass) {
+            $rawResponses = [$rawResponses];
+        }
+
+        $this->responses = [];
+        foreach ($rawResponses as $rawResponse) {
+            try {
+                $response = new SyncResponse($rawResponse);
+            } catch (ResponseParseException $exception) {
+                $this->logger->warning(
+                    'Invalid JSON-RPC response skipped: '.$exception->getMessage(),
+                    [
+                        'data' => json_decode(json_encode($rawResponse), true),
+                    ]
+                );
+
+                continue;
+            }
+
+            $this->responses[$response->getId()] = $response;
+        }
+
+        $this->synchronized = true;
     }
 }

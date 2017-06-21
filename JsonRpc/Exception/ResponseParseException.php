@@ -7,65 +7,81 @@ class ResponseParseException extends \RuntimeException implements JsonRpcExcepti
     /** @return static */
     public static function noErrorOrResultPresent()
     {
-        return new static(sprintf(
-            'Response received, but no error or result field present'
-        ));
+        return new static(
+            sprintf(
+                'Response received, but no error or result field present'
+            )
+        );
     }
 
     /** @return static */
     public static function bothErrorAndResultPresent()
     {
-        return new static(sprintf(
-            'Response received, but both result and error fields are present'
-        ));
+        return new static(
+            sprintf(
+                'Response received, but both result and error fields are present'
+            )
+        );
     }
 
     /** @return static */
     public static function noErrorCodePresent()
     {
-        return new static(sprintf(
-            'Response received, error present, but no code field specified'
-        ));
+        return new static(
+            sprintf(
+                'Response received, error present, but no code field specified'
+            )
+        );
     }
 
     /** @return static */
     public static function noErrorMessagePresent()
     {
-        return new static(sprintf(
-            'Response received, error present, but no message field specified'
-        ));
+        return new static(
+            sprintf(
+                'Response received, error present, but no message field specified'
+            )
+        );
     }
 
     /** @return static */
     public static function noVersionSpecified()
     {
-        return new static(sprintf(
-            'Response received, but no JSON-RPC version specified'
-        ));
+        return new static(
+            sprintf(
+                'Response received, but no JSON-RPC version specified'
+            )
+        );
     }
 
     /** @return static */
     public static function inconsistentVersionReceived()
     {
-        return new static(sprintf(
-            'Response received, but response JSON-RPC version does not match client JSON-RPC version'
-        ));
+        return new static(
+            sprintf(
+                'Response received, but response JSON-RPC version does not match client JSON-RPC version'
+            )
+        );
     }
 
     /** @return static */
     public static function notAJsonResponse()
     {
-        return new static(sprintf(
-            'Response received, but response body is not a valid JSON object'
-        ));
+        return new static(
+            sprintf(
+                'Response received, but response body is not a valid JSON object'
+            )
+        );
     }
 
     /** @return static */
     public static function noIdSpecified()
     {
-        return new static(sprintf(
-            'Response received, but no JSON-RPC Request ID specified'
-        ));
+        return new static(
+            sprintf(
+                'Response received, but no JSON-RPC Request ID specified'
+            )
+        );
     }
 
     /**
@@ -73,8 +89,22 @@ class ResponseParseException extends \RuntimeException implements JsonRpcExcepti
      */
     public static function errorIsNotAnObject()
     {
-        return new static(sprintf(
-            'Response received, but error has invalid format'
-        ));
+        return new static(
+            sprintf(
+                'Response received, but error has invalid format'
+            )
+        );
+    }
+
+    public static function unexpectedType($path, $expected, $actual)
+    {
+        return new static(
+            sprintf(
+                'Unexpected type for "%s": %s given, %s expected',
+                $path,
+                $actual,
+                $expected
+            )
+        );
     }
 }

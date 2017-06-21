@@ -15,21 +15,33 @@ final class JsonRpcRequest implements JsonRpcRequestInterface
 
     /**
      * JsonRpcRequest constructor.
-     * @param string $method
+     *
+     * @param string               $method
      * @param \stdClass|array|null $parameters
-     * @param string $id
+     * @param string               $id
+     *
+     * @throws \InvalidArgumentException
      */
-    public function __construct($method, $parameters = null, $id = null)
+    public function __construct($method, $parameters = null, $id)
     {
-        $this->method = $method;
+        $this->method     = (string)$method;
         $this->parameters = $parameters;
-        $this->id = $id;
+        $this->id         = (string)$id;
+
+        if (empty($this->id)) {
+            throw new \InvalidArgumentException(
+                'ID should not be empty for JSON-RPC request, use notification instead'
+            );
+        }
     }
 
     /**
      * @param RpcRequestInterface $request
-     * @param string $id
+     * @param string              $id
+     *
      * @return static
+     *
+     * @throws \InvalidArgumentException
      */
     public static function fromRpcRequest(RpcRequestInterface $request, $id)
     {
@@ -65,17 +77,12 @@ final class JsonRpcRequest implements JsonRpcRequestInterface
      */
     public function jsonSerialize()
     {
-        $result = [
-            self::VERSION_FIELD => JsonRpcClient::VERSION,
-            self::METHOD_FIELD => $this->getMethod(),
+        return [
+            self::VERSION_FIELD    => $this->getVersion(),
+            self::ID_FIELD         => $this->getId(),
+            self::METHOD_FIELD     => $this->getMethod(),
             self::PARAMETERS_FIELD => $this->getParameters(),
         ];
-
-        if (!$this->isNotification()) {
-            $result[self::ID_FIELD] = $this->getId();
-        }
-
-        return $result;
     }
 
     /**

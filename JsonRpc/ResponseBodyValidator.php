@@ -41,8 +41,19 @@ final class ResponseBodyValidator
             if (!property_exists($response->{JsonRpcResponseInterface::ERROR_FIELD}, JsonRpcErrorInterface::ERROR_CODE_FIELD)) {
                 throw ResponseParseException::noErrorCodePresent();
             }
+
+            $error = $response->{JsonRpcResponseInterface::ERROR_FIELD}->{JsonRpcErrorInterface::ERROR_CODE_FIELD};
+            if (!is_int($error)) {
+                throw ResponseParseException::unexpectedType('error.code', 'integer', gettype($error));
+            }
+
             if (!property_exists($response->{JsonRpcResponseInterface::ERROR_FIELD}, JsonRpcErrorInterface::ERROR_MESSAGE_FIELD)) {
                 throw ResponseParseException::noErrorMessagePresent();
+            }
+
+            $message = $response->{JsonRpcResponseInterface::ERROR_FIELD}->{JsonRpcErrorInterface::ERROR_MESSAGE_FIELD};
+            if (!is_string($message)) {
+                throw ResponseParseException::unexpectedType('error.message', 'string', gettype($message));
             }
         }
     }

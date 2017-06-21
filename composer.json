@@ -11,7 +11,7 @@
   "minimum-stability": "stable",
   "require": {
     "php": "~5.5|~7.0",
-    "scaytrase/rpc-common": "~1.0",
+    "scaytrase/rpc-common": "~1.1",
     "psr/log": "~1.0",
     "guzzlehttp/guzzle": "~6.0",
     "paragonie/random_compat": "^1|^2"
@@ -24,8 +24,5 @@
     "psr-4": {
       "ScayTrase\\Api\\": "./"
     }
-  },
-  "suggest": {
-    "psr/cache": "For CacheableRpcClient decorator"
   }
 }
